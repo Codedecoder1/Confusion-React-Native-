@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Home from './HomeComponent';
 import Menu from './MenuComponent';
+import ContactUs from './ContactComponent';
+import About from './AboutComponent';
 import DishDetail from './DishdetailComponent';
 import { View, Platform } from 'react-native';
 import { createStackNavigator, createDrawerNavigator } from 'react-navigation';
@@ -38,6 +40,36 @@ const HomeNavigator = createStackNavigator({
   }
 });
 
+const ContactUsNavigator = createStackNavigator({
+  ContactUs: { screen: ContactUs }
+}, {
+  initialRouteName: 'ContactUs',
+  navigationOptions: {
+    headerStyle: {
+      backgroundColor: "#512DA8"
+    },
+    headerTintColor: "#fff",
+    headerTitleStyle: {
+      color: "#fff"
+    }
+  }
+});
+
+const AboutNavigator = createStackNavigator({
+  About: { screen: About }
+}, {
+  initialRouteName: 'About',
+  navigationOptions: {
+    headerStyle: {
+      backgroundColor: "#512DA8"
+    },
+    headerTintColor: "#fff",
+    headerTitleStyle: {
+      color: "#fff"
+    }
+  }
+});
+
 const MainNavigator = createDrawerNavigator({
   Home: {
     screen: HomeNavigator,
@@ -52,7 +84,21 @@ const MainNavigator = createDrawerNavigator({
       title: 'Menu',
       drawerLabel: 'Menu'
     }
-  }
+  },
+  ContactUs: {
+    screen: ContactUsNavigator,
+    navigationOptions: {
+      title: 'Contact Us',
+      drawerLabel: 'Contact Us'
+    }
+  }, 
+  About: {
+    screen: AboutNavigator,
+    navigationOptions: {
+      title: 'About Us',
+      drawerLabel: 'About Us'
+    }
+  },
 }, {    drawerBackgroundColor: '#D1C4E9'});
 
 class Main extends Component {
