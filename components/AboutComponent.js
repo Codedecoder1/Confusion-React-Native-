@@ -1,11 +1,18 @@
 import React, { Component } from 'react';
-import { FlatList, ScrollView } from 'react-native';
-import { ListItem, Card, Text } from 'react-native-elements';
-import { LEADERS } from '../shared/leaders';
+import { FlatList, ScrollView, Text } from 'react-native';
+import { ListItem, Card,  } from 'react-native-elements';
+import { connect } from 'react-redux';
+import { baseUrl } from '../shared/baseUrl';
+
+const mapStateToProps = state => {
+    return {
+      leaders: state.leaders
+    }
+  }
 
 
 
-function RenderHistory(props) {
+function History() {
 
     return (
         <Card
@@ -21,41 +28,36 @@ function RenderHistory(props) {
 
 class About extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            leaders: LEADERS
-        };
-    }
-
     static navigationOptions = {
-        title: 'About'
+        title: 'About Us'
     };
 
     render() {
 
-        const renderAboutItem = ({ item }) => {
+        const {params} = this.props.navigation.state;
+        const renderLeader = ({item, index}) => {
+
 
             return (
-
                 <ListItem
                     title={item.name}
                     subtitle={item.description}
-                    leftAvatar={{ source: require('./images/alberto.png') }}
+                    leftAvatar={{source: {uri: baseUrl + item.image}}}
                 />
             );
-        }
+            };
 
         return (
             <ScrollView>
-                <RenderHistory />
-                <Card>
-                    <FlatList
-                        data={this.state.leaders}
-                        renderItem={renderAboutItem}
-                        keyExtractor={item => item.id.toString()}
+                <History />
+                <Card 
+                title='Corporate Leadership'>
+                <FlatList 
+                    data={this.props.leaders.leaders}
+                    renderItem={renderLeader}
+                    keyExtractor={item => item.id.toString()}
                     />
-                </Card>
+                    </Card>
             </ScrollView>
         );
 
@@ -63,4 +65,4 @@ class About extends Component {
 
 }
 
-export default About;
+export default connect(mapStateToProps)(About);
