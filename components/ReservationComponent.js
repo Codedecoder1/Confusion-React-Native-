@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, ScrollView, Picker, Switch, Button, Modal } from 'react-native';
+import { Text, View, StyleSheet, ScrollView, Picker, Switch, Button, Modal, TouchableOpacity, Alert } from 'react-native';
 import DatePicker from 'react-native-datepicker'
+import * as Animatable from 'react-native-animatable';
 
 class Reservation extends Component {
 
@@ -11,35 +12,55 @@ class Reservation extends Component {
             guests: 1,
             smoking: false,
             date: '',
-            showModal: false
+            showAlert: false
+            //showModal: false
         }
     }
 
+    handleViewRef = ref => this.view = ref;
     static navigationOptions = {
         title: 'Reserve Table',
     };
 
-    toggleModal() {
+    /*toggleModal() {
         this.setState({showModal: !this.state.showModal});
     }
 
     handleReservation() {
         console.log(JSON.stringify(this.state));
         this.toggleModal();
-    }
+    }*/
 
-    resetForm() {
+    resetAlert() {
         this.setState({
             guests: 1,
             smoking: false,
             date: '',
-            showModal: false
+            showAlert: false
         });
     }
+
+
+       pressAlert = () => {
+        this.setState({ showAlert: !this.state.showAlert });
+            Alert.alert(
+                "Your Reservation OK",
+                 `Number of Guests: ${this.state.guests}\nSmoking?: ${this.state.smoking}\nDate and Time: ${this.state.date}`,
+                [
+                {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                {text: 'OK', onPress: () =>  console.log('Already favorite'), style: 'cancel' },
+                ],
+                { cancelable: false },
+               );
+               return true;
+        };
+
     
+
     render() {
         return(
-            <ScrollView>
+            <Animatable.View animation="zoomIn" duration={2000} delay={1000}
+            ref={this.handleViewRef}>
                 <View style={styles.formRow}>
                 <Text style={styles.formLabel}>Number of Guests</Text>
                 <Picker
@@ -59,7 +80,8 @@ class Reservation extends Component {
                 <Switch
                     style={styles.formItem}
                     value={this.state.smoking}
-                    trackColor={{true: '#512DA8', false: null}}                     onValueChange={(value) => this.setState({smoking: value})}>
+                    trackColor={{true: '#512DA8', false: null}}   
+                    onValueChange={(value) => this.setState({smoking: value})}>
                 </Switch>
                 </View>
                 <View style={styles.formRow}>
@@ -88,15 +110,15 @@ class Reservation extends Component {
                     onDateChange={(date) => {this.setState({date: date})}}
                 />
                 </View>
-                <View style={styles.formRow}>
+                <View style={styles.formRow}> 
                 <Button
-                    onPress={() => this.handleReservation()}
+                    onPress={() => {this.pressAlert(!this.pressAlert);  this.resetAlert();}}        //{() => this.handleReservation()}
                     title="Reserve"
                     color="#512DA8"
                     accessibilityLabel="Learn more about this purple button"
-                    />
+                />
                 </View>
-                <Modal animationType = {"slide"} transparent = {false}
+                {/*<Modal animationType = {"slide"} transparent = {false}
                     visible = {this.state.showModal}
                     onDismiss = {() => this.toggleModal() }
                     onRequestClose = {() => this.toggleModal() }>
@@ -112,8 +134,8 @@ class Reservation extends Component {
                             title="Close" 
                             />
                     </View>
-                </Modal>
-            </ScrollView>
+                    </Modal>*/}
+                </Animatable.View>
         );
     }
 
@@ -149,6 +171,13 @@ const styles = StyleSheet.create({
      modalText: {
          fontSize: 18,
          margin: 10
+     },
+     button: {
+        backgroundColor: '#4ba37b',
+        width: 100,
+        borderRadius: 50,
+        alignItems: 'center',
+        marginTop: 100
      }
 });
 
