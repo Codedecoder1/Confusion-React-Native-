@@ -130,7 +130,8 @@ class RegisterTab extends Component {
             lastname: '',
             email: '',
             remember: false,
-            imageUrl: baseUrl + 'images/logo.png'
+            imageUrl: baseUrl + 'images/logo.png',
+            image: null
         }
     }
 
@@ -184,6 +185,24 @@ class RegisterTab extends Component {
                 .catch((error) => console.log('Could not save user info', error));
     }
 
+    getImageFromGallery = async () => {
+        const cameraPermission = await Permissions.askAsync(Permissions.CAMERA);
+        const cameraRollPermission = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+
+        if (cameraPermission.status === 'granted' && cameraRollPermission.status === 'granted'){
+        let result = await ImagePicker.launchImageLibraryAsync({
+          allowsEditing: true,
+          aspect: [4, 3],
+        });
+    
+        if (!result.cancelled) {
+            console.log(result);
+        this.processImage(result.uri);
+        }
+    }
+      };
+
+
     render() {
         return(
             <ScrollView>
@@ -194,9 +213,13 @@ class RegisterTab extends Component {
                         loadingIndicatorSource={require('./images/logo.png')}
                         style={styles.image} 
                         />
-                    <Button
+                    <Button  ml={10}
                         title="Camera"
                         onPress={this.getImageFromCamera}
+                        />
+                    <Button  ml={10}
+                        title="Gallery"
+                        onPress={this.getImageFromGallery}
                         />
                 </View>
                 <Input
@@ -271,7 +294,8 @@ const styles = StyleSheet.create({
     imageContainer: {
         flex: 1,
         flexDirection: 'row',
-        margin: 20
+        margin: 20,
+        justifyContent: 'space-around'
     },
     image: {
       margin: 10,
@@ -287,6 +311,10 @@ const styles = StyleSheet.create({
     },
     formButton: {
         margin: 60
+    },
+    loginButton: {
+        margin: 50
+
     }
 });
 

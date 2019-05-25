@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { Text, View, StyleSheet, ScrollView, Picker, Switch, Button, Modal, TouchableOpacity, Alert } from 'react-native';
 import DatePicker from 'react-native-datepicker'
 import * as Animatable from 'react-native-animatable';
-import { Permissions, Notifications } from 'expo';
+import { Permissions, Notifications, Calendar} from 'expo';
+import { calendarFormat } from 'moment';
 
 class Reservation extends Component {
 
@@ -28,8 +29,8 @@ class Reservation extends Component {
     }
 
     handleReservation() {
-        console.log(JSON.stringify(this.state));
-        this.toggleModal();
+        //console.log(JSON.stringify(this.state));
+       
     }*/
 
     resetAlert() {
@@ -79,13 +80,13 @@ class Reservation extends Component {
        pressAlert = () => {
         this.setState({ showAlert: !this.state.showAlert });
             Alert.alert(
-                "Your Reservation OK",
+                "Your Reservation OK?",
                  `Number of Guests: ${this.state.guests}\nSmoking?: ${this.state.smoking}\nDate and Time: ${this.state.date}`,
                 [
                 {text: 'Cancel', onPress: () => {console.log('Reservation Cancelled'); 
                     this.resetForm();
                 }, style: 'cancel'},
-                {text: 'OK', onPress: () => {this.presentLocalNotification(this.state.date);
+                {text: 'OK', onPress: () => {this.presentLocalNotification(this.state.date);  this.addReservationToCalendar(this.state.date);
                     this.resetForm(); }, style: 'cancel' },
                 ],
                 { cancelable: false },
@@ -93,6 +94,59 @@ class Reservation extends Component {
                return true;
         };
 
+        async obtainCalendarPermission() {
+            let permission = await Permissions.getAsync(Permissions.CALENDAR);
+            if (permission.status !== 'granted') {
+                permission = await Permissions.askAsync(Permissions.CALENDAR);
+                if (permission.status !== 'granted') {
+                    Alert.alert('Permission not granted to write in calendar');
+                }
+            }
+            return permission;
+        }
+
+        async addReservationToCalendar(date) {
+            try {
+                const perms = await this.obtainCalendarPermission();
+                if (perms.status === 'granted') {
+
+                    await Calendar.createEventAsync(Calendar.DEFAULT, {
+                        title:  'Con Fusion Table Reservation',
+                        startDate: new Date(Date.parse(date)),
+                        endDate: new Date(Date.parse(date) + (2*60*60*1000)),
+                        timeZone: 'Asia/Hong_Kong',
+                        location: '121, Clear Water Bay Road, Clear Water Bay, Kowloon, Hong Kong'
+        
+                    });
+                }
+
+            } catch (err) {
+                console.log(err);
+            }
+        }
+    
+        
+        
+        
+        /*Calendar = (title, startDate, endDate, timeZone, location) => {
+            await this.addReservationToCalendar();
+            Calendar.createEventAsync({
+            title:  '',
+            startDate: '',
+            endDate: '',
+            timeZone: '',
+            location: ''
+
+
+        });
+        }
+
+        async Calendar(title, startDate, endDate, timeZone, location) {
+            Calendar.createEventAsync(
+                calendarId, 
+                details = Calendar.DEFAULT(title, startDate, endDate, timeZone, location));
+           
+        }*/
     
 
     render() {
@@ -150,7 +204,7 @@ class Reservation extends Component {
                 </View>
                 <View style={styles.formRow}> 
                 <Button
-                    onPress={() => {this.pressAlert(!this.pressAlert);  this.resetAlert();}}        //{() => this.handleReservation()}
+                    onPress={() => {this.pressAlert()}}        //{() => this.handleReservation()}
                     title="Reserve"
                     color="#512DA8"
                     accessibilityLabel="Learn more about this purple button"
